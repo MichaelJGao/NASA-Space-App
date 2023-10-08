@@ -53,11 +53,72 @@
 
         init();
         animate();
+        const buttonMeshes = [];
 
+        function handleButtonClick() {
+            // Show the modal dialog
+            const modalContainer = document.querySelector('.modal-container');
+            modalContainer.style.display = 'flex'; // Show the modal
+
+            // Add your 3D model or content to the modal content here
+            const model = create3DModel(); // Implement your 3D model creation function
+            const modalContent = document.querySelector('.modal-content');
+            modalContent.appendChild(model);
+        }
+        
+
+        // Create a question mark-shaped button
+        const questionMarkButton = createQuestionMarkButton();
+        scene.add(questionMarkButton);
+
+        // Function to create a question mark-shaped button
+        function createQuestionMarkButton() {
+            // Define the vertices and faces for the question mark symbol
+            const geometry = new THREE.BufferGeometry();
+            const vertices = new Float32Array([
+                // Define vertices for the question mark symbol
+                0, 1, 0,
+                -0.25, 0.25, 0,
+                0.25, 0.25, 0,
+                0, -0.25, 0,
+                -0.2, -0.45, 0,
+                0.2, -0.45, 0,
+            ]);
+            
+            // Define the indices to create triangles
+            const indices = new Uint16Array([
+                0, 1, 2,
+                0, 2, 3,
+                4, 5, 0,
+            ]);
+
+            // Set the position attribute with the vertices
+            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+            // Set the index attribute with the indices
+            geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+            // Create a material for the button (adjust color and other properties as needed)
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+            // Create the button mesh
+            const buttonMesh = new THREE.Mesh(geometry, material);
+
+            // Position the button in the scene (adjust as needed)
+            buttonMesh.position.set(20, 100, 200);
+
+            // Add a click event listener for the button
+            buttonMesh.addEventListener('click', () => {
+                handleButtonClick();
+            });
+
+            return buttonMesh;
+        }
+        
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
-            camera.position.set(30, 30, 100);
+            camera.position.set(30, 300, 500);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
