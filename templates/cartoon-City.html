@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Cartoon City Scene with Park</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        let scene, camera, renderer;
+
+        // Raycaster and mouse for detecting clicks on objects
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Array to hold our question marks for raycasting
+        const clickableObjects = [];
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
+            camera.position.set(200, 80, 200);  
+            camera.lookAt(0, 15, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 50);
+            scene.add(directionalLight);
+
+            // Add enhanced city buildings with details
+            createCity();
+
+            // Add roads and sidewalks
+            createRoads();
+
+            // Add a park with trees and benches
+            createPark();
+
+            // Add detailed and scattered cartoon-style mansions
+            createMansions();
+
+            // Add the 3D question marks
+            addQuestionMarks();
+
+            // Event listener for clicks to handle modal
+            renderer.domElement.addEventListener('click', onClick, false);
+
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function createCity() {
+            const buildingColors = [0xff9999, 0x99ff99, 0x9999ff, 0xffff99];
+            const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x888888 });
+            const windowMaterial = new THREE.MeshLambertMaterial({ color: 0xccddff });
+
+            for (let i = -40; i <= -10; i += 5) {
+                for (let j = -10; j <= 10; j += 5) {
+                    const height = Math.random() * 30 + 10;
+                    const geometry = new THREE.BoxGeometry(4, height, 4);
+                    const building = new THREE.Mesh(geometry, buildingMaterial);
+                    building.position.set(i, height / 2 - 10, j);
+                    scene.add(building);
+
+                    // Add windows to buildings for detail
+                    const windowGeometry = new THREE.BoxGeometry(1, 1, 0.05);
+                    for (let w = -1; w <= 1; w += 2) {
+                        for (let h = 5; h < height; h += 3) {
+                            const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+                            windowMesh.position.set(i + w, h - 10, j + 2);
+                            scene.add(windowMesh);
+
+                            const windowMeshOpposite = new THREE.Mesh(windowGeometry, windowMaterial);
+                            windowMeshOpposite.position.set(i + w, h - 10, j - 2);
+                            scene.add(windowMeshOpposite);
+                        }
+                    }
+                }
+            }
+        }
+
+        function createRoads() {
+            const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const sidewalkMaterial = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
+
+            // Main horizontal road
+            const mainRoadGeometry = new THREE.BoxGeometry(140, 0.5, 8);
+            const mainRoad = new THREE.Mesh(mainRoadGeometry, roadMaterial);
+            mainRoad.position.set(10, -10.25, 0);
+            scene.add(mainRoad);
+
+            // Vertical roads in the city
+            for (let i = -40; i <= -10; i += 15) {
+                const verticalRoadGeometry = new THREE.BoxGeometry(8, 0.5, 30);
+                const verticalRoad = new THREE.Mesh(verticalRoadGeometry, roadMaterial);
+                verticalRoad.position.set(i, -10.25, -10);
+                scene.add(verticalRoad);
+            }
+
+            // Sidewalks beside main road
+            const sidewalkGeometry = new THREE.BoxGeometry(140, 0.4, 4);
+            const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+            leftSidewalk.position.set(10, -10.3, -6);
+            scene.add(leftSidewalk);
+
+            const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+            rightSidewalk.position.set(10, -10.3, 6);
+            scene.add(rightSidewalk);
+        }
+
+        function createPark() {
+            const treeColors = [0x228B22, 0x32CD32, 0x008000];
+            const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const benchMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
+
+            for (let i = -35; i <= 60; i += Math.random() * 5 + 5) {
+                for (let j = 15 + Math.random() * 5; j <= 35; j += Math.random() * 5 + 5) {
+                    // Trunk
+                    const trunkGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5);
+                    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+                    trunk.position.set(i + (Math.random() * 10 - 5), -5, j + (Math.random() * 10 - 5));
+                    scene.add(trunk);
+
+                    // Leaves
+                    const leavesGeometry = new THREE.SphereGeometry(4);
+                    const leavesMaterial = new THREE.MeshLambertMaterial({ color: treeColors[Math.floor(Math.random() * treeColors.length)] });
+                    const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+                    leaves.position.set(trunk.position.x, trunk.position.y + 6, trunk.position.z);
+                    scene.add(leaves);
+                }
+            }
+
+            // Benches in the park
+            for (let i = -20; i <= 50; i += 35) {
+                for (let j = 20; j <= 30; j += 10) {
+                    const benchBaseGeometry = new THREE.BoxGeometry(10, 0.5, 2);
+                    const benchBase = new THREE.Mesh(benchBaseGeometry, benchMaterial);
+                    benchBase.position.set(i, -9.75, j);
+                    scene.add(benchBase);
+
+                    const benchBackGeometry = new THREE.BoxGeometry(10, 2, 0.5);
+                    const benchBack = new THREE.Mesh(benchBackGeometry, benchMaterial);
+                    benchBack.position.set(i, -8.75, j + 1);
+                    scene.add(benchBack);
+                }
+            }
+        }
+
+        function createMansions() {
+            const mansionColors = [0xffcccc, 0xccffcc, 0xccccff, 0xffffcc];
+            const mansionMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+            const windowMaterial = new THREE.MeshLambertMaterial({ color: 0xddddff });
+
+            for (let i = 80; i <= 200; i += 60) {  // Significantly spread out
+                for (let j = -40; j <= 40; j += 40) {
+                    const depth = Math.random() * 20 + 20;
+                    const width = Math.random() * 20 + 20;
+                    const height = Math.random() * 15 + 15;
+                    const geometry = new THREE.BoxGeometry(width, height, depth);
+                    const mansion = new THREE.Mesh(geometry, mansionMaterial);
+                    mansion.position.set(i, height / 2 - 10, j);
+                    scene.add(mansion);
+
+                    // Add windows to mansions for detail
+                    const windowGeometry = new THREE.BoxGeometry(3, 3, 0.1);
+                    for (let w = -width / 2 + 4; w <= width / 2 - 4; w += 8) {
+                        for (let h = 5; h < height; h += 6) {
+                            const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+                            windowMesh.position.set(i + w, h - 10, j + depth / 2 - 0.5);
+                            scene.add(windowMesh);
+
+                            const windowMeshOpposite = new THREE.Mesh(windowGeometry, windowMaterial);
+                            windowMeshOpposite.position.set(i + w, h - 10, j - depth / 2 + 0.5);
+                            scene.add(windowMeshOpposite);
+                        }
+                    }
+                }
+            }
+        }
+
+        function addQuestionMarks() {
+            const loader = new THREE.FontLoader();
+            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                const textGeometry = new THREE.TextGeometry('?', {
+                    font: font,
+                    size: 10,
+                    height: 2,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 0.5,
+                    bevelSize: 0.25,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+
+                const materials = [
+                    new THREE.MeshPhongMaterial({ color: 0xff0000 }), // Red
+                    new THREE.MeshPhongMaterial({ color: 0x00ff00 }), // Green
+                    new THREE.MeshPhongMaterial({ color: 0x0000ff }), // Blue
+                    new THREE.MeshPhongMaterial({ color: 0xffff00 })  // Yellow
+                ];
+
+                for (let i = 0; i < 4; i++) {
+                    const textMesh = new THREE.Mesh(textGeometry, materials[i]);
+                    textMesh.position.set(-40 + i * 15, 20, 30);  
+                    scene.add(textMesh);
+                    clickableObjects.push(textMesh);
+                }
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onClick(event) {
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableObjects);
+
+            if (intersects.length > 0) {
+                const clickedObject = intersects[0].object;
+                const index = clickableObjects.indexOf(clickedObject);
+
+                // Open the corresponding modal
+                openModal(`modal${index + 1}`);
+            }
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = "block";
+            modal.addEventListener('click', (event) => {
+                if (event.target.className === "close" || event.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
+    </script>
+
+    <!-- Modals -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal1">&times;</span>
+            <h2>Title 1</h2>
+            <p>Description for question mark 1</p>
+        </div>
+    </div>
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal2">&times;</span>
+            <h2>Title 2</h2>
+            <p>Description for question mark 2</p>
+        </div>
+    </div>
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal3">&times;</span>
+            <h2>Title 3</h2>
+            <p>Description for question mark 3</p>
+        </div>
+    </div>
+    <div id="modal4" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal4">&times;</span>
+            <h2>Title 4</h2>
+            <p>Description for question mark 4</p>
+        </div>
+    </div>
+
+</body>
+</html>
