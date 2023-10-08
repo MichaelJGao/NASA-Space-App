@@ -10,6 +10,10 @@ def home():
 def ocean():
     return render_template('ocean.html')
 
-@views.route("/earth2")
-def earth2():
+@views.route("/analogy-earth")
+def analogyEarth():
     return render_template('earth2.html')
+
+@views.route("/resources")
+def resources():
+    return render_template('resources.html')
