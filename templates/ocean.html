@@ -17,6 +17,34 @@
             top: 0;
             left: 0;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 
     <!-- Vertex and Fragment Shaders for the Gradient Sky -->
@@ -40,7 +68,6 @@
             gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max(h, 0.0), exponent ), 0.0 ) ), 1.0 );
         }
     </script>
-
 </head>
 
 <body>
@@ -49,94 +76,30 @@
     <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        let scene, camera, renderer, water, controls;
+        let scene, camera, renderer, water;
+
+        // Raycaster and mouse for detecting clicks on objects
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Array to hold our question marks for raycasting
+        const clickableObjects = [];
 
         init();
         animate();
-        const buttonMeshes = [];
 
-        function handleButtonClick() {
-            // Show the modal dialog
-            const modalContainer = document.querySelector('.modal-container');
-            modalContainer.style.display = 'flex'; // Show the modal
-
-            // Add your 3D model or content to the modal content here
-            const model = create3DModel(); // Implement your 3D model creation function
-            const modalContent = document.querySelector('.modal-content');
-            modalContent.appendChild(model);
-        }
-        
-
-        // Create a question mark-shaped button
-        const questionMarkButton = createQuestionMarkButton();
-        scene.add(questionMarkButton);
-
-        // Function to create a question mark-shaped button
-        function createQuestionMarkButton() {
-            // Define the vertices and faces for the question mark symbol
-            const geometry = new THREE.BufferGeometry();
-            const vertices = new Float32Array([
-                // Define vertices for the question mark symbol
-                0, 1, 0,
-                -0.25, 0.25, 0,
-                0.25, 0.25, 0,
-                0, -0.25, 0,
-                -0.2, -0.45, 0,
-                0.2, -0.45, 0,
-            ]);
-            
-            // Define the indices to create triangles
-            const indices = new Uint16Array([
-                0, 1, 2,
-                0, 2, 3,
-                4, 5, 0,
-            ]);
-
-            // Set the position attribute with the vertices
-            geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-
-            // Set the index attribute with the indices
-            geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-
-            // Create a material for the button (adjust color and other properties as needed)
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-
-            // Create the button mesh
-            const buttonMesh = new THREE.Mesh(geometry, material);
-
-            // Position the button in the scene (adjust as needed)
-            buttonMesh.position.set(20, 100, 200);
-
-            // Add a click event listener for the button
-            buttonMesh.addEventListener('click', () => {
-                handleButtonClick();
-            });
-
-            return buttonMesh;
-        }
-        
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
-            camera.position.set(30, 300, 500);
+            camera.position.set(30, 30, 100);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-            // Allow slight horizontal rotation
-            controls.minAzimuthAngle = -Math.PI / 16;
-            controls.maxAzimuthAngle = Math.PI / 16;
-
-            // Disable rotation
-            controls.enableRotate = false;
-
-            // Override the update function to ensure the camera always looks at the target
-            controls.update = function() {
-                this.object.lookAt(this.target);
-            };
+            // Controls are initialized but never enabled, effectively disabling camera movement
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enabled = false;
 
             const waterGeometry = new THREE.PlaneBufferGeometry(5000, 5000);
             water = new THREE.Water(waterGeometry, {
@@ -164,6 +127,12 @@
 
             // Gradient Sky
             createGradientSky();
+
+            // Add the 3D question marks
+            addQuestionMarks();
+
+            // Event listener for clicks to handle modal
+            renderer.domElement.addEventListener('click', onClick, false);
 
             window.addEventListener('resize', onWindowResize, false);
         }
@@ -193,10 +162,41 @@
             scene.add(sky);
         }
 
+        function addQuestionMarks() {
+            // Load a font
+            const loader = new THREE.FontLoader();
+            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                const textGeometry = new THREE.TextGeometry('?', {
+                    font: font,
+                    size: 10,
+                    height: 2,
+                    curveSegments: 12,
+                    bevelEnabled: true,
+                    bevelThickness: 0.5,
+                    bevelSize: 0.25,
+                    bevelOffset: 0,
+                    bevelSegments: 5
+                });
+
+                const materials = [
+                    new THREE.MeshPhongMaterial({ color: 0xff0000 }), // Red
+                    new THREE.MeshPhongMaterial({ color: 0x00ff00 }), // Green
+                    new THREE.MeshPhongMaterial({ color: 0x0000ff }), // Blue
+                    new THREE.MeshPhongMaterial({ color: 0xffff00 })  // Yellow
+                ];
+
+                for (let i = 0; i < 4; i++) {
+                    const textMesh = new THREE.Mesh(textGeometry, materials[i]);
+                    textMesh.position.set(-20 + i * 15, 10, 0);
+                    scene.add(textMesh);
+                    clickableObjects.push(textMesh);
+                }
+            });
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             water.material.uniforms['time'].value += 0.1 / 60.0;
-
             renderer.render(scene, camera);
         }
 
@@ -205,6 +205,66 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
+
+        function onClick(event) {
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableObjects);
+
+            if (intersects.length > 0) {
+                const clickedObject = intersects[0].object;
+                const index = clickableObjects.indexOf(clickedObject);
+
+                // Open the corresponding modal
+                openModal(`modal${index + 1}`);
+            }
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = "block";
+            modal.addEventListener('click', (event) => {
+                if (event.target.className === "close" || event.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
     </script>
+
+    <!-- Modals -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal1">&times;</span>
+            <h2>Title 1</h2>
+            <p>Description for question mark 1</p>
+        </div>
+    </div>
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal2">&times;</span>
+            <h2>Title 2</h2>
+            <p>Description for question mark 2</p>
+        </div>
+    </div>
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal3">&times;</span>
+            <h2>Title 3</h2>
+            <p>Description for question mark 3</p>
+        </div>
+    </div>
+    <div id="modal4" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal4">&times;</span>
+            <h2>Title 4</h2>
+            <p>Description for question mark 4</p>
+        </div>
+    </div>
+
+    {%include 'navbar.html'%}
 </body>
 </html>

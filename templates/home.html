@@ -32,6 +32,7 @@
 </head>
 
 <body>
+    {%include 'navbar.html'%}
     <div id="fadeOverlay"></div>
 
     <script src="https://threejs.org/build/three.js"></script>
@@ -126,31 +127,11 @@
             TWEEN.update();
         }
 
-        function transitionToOceanScene() {
-            new TWEEN.Tween({ opacity: 0 })
-                .to({ opacity: 1 }, 1000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function(value) {
-                    document.getElementById('fadeOverlay').style.opacity = value.opacity;
-                })
-                .onComplete(() => {
-                    earth.visible = false;
-                    buttonAtlantic.visible = false;
-                    buttonCalifornia.visible = false;
-                    ocean.visible = true;
-                    camera.position.set(0, 5, 10);
-                    camera.lookAt(0, 0, 0);
-                    autoRotate = false;
-                    new TWEEN.Tween({ opacity: 1 })
-                        .to({ opacity: 0 }, 1000)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .onUpdate(function(value) {
-                            document.getElementById('fadeOverlay').style.opacity = value.opacity;
-                        })
-                        .start();
-                })
-                .start();
+        function loadOceanHTML() {
+            window.location.href = 'ocean';
         }
+
+
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -235,8 +216,8 @@
                 })
                 .onComplete(() => {
                     document.getElementById('fadeOverlay').style.opacity = 0;
-                    transitionToOceanScene();
-                    inTransition = false; // Reset the flag when the transition completes
+                    loadOceanHTML(); // Redirect to the ocean.html page
+                    inTransition = false; 
                 })
                 .start();
         }
