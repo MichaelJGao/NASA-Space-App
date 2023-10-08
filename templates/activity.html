@@ -273,17 +273,32 @@
         </div>
     </div>
 
+    <!-- Fill in the Blank Modal -->
     <div class="modal-container" id="fill-in-the-blank-modal">
         <div class="modal-content">
             <h2>FILL IN THE BLANK</h2>
-            <!-- Add content for the Fill in the Blank activity here -->
+            <p>Complete the following sentences:</p>
+            <p>Oceans cover about <input type="text" class="blank" id="blank1"> of the Earth's surface.</p>
+            <p>The largest ocean on Earth is the <input type="text" class="blank" id="blank2">.</p>
+            <p><input type="text" class="blank" id="blank3"> are known as the "lungs of the Earth" because they produce a large portion of the world's oxygen.</p>
+            <button onclick="checkFillInTheBlanks()">Check Answers</button>
+            <div id="fill-in-the-blank-results"></div>
             <span class="close-button" onclick="toggleModal('fill-in-the-blank')">X</span>
         </div>
     </div>
+    
 
     <script>
         let openModalId = null;
 
+        function checkFillInTheBlanks() {
+            let correctCount = 0;
+            if (document.getElementById('blank1').value.trim().toLowerCase() === '70%') correctCount++;
+            if (document.getElementById('blank2').value.trim().toLowerCase() === 'pacific') correctCount++;
+            if (document.getElementById('blank3').value.trim().toLowerCase() === 'phytoplankton') correctCount++;
+
+            document.getElementById('fill-in-the-blank-results').textContent = `You got ${correctCount} out of 3 correct!`;
+        }
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId + '-modal');
 
