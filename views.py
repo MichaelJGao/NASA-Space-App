@@ -20,7 +20,7 @@ def resources():
 
 @views.route("/city")
 def city():
-    return render_template('cartoon-city.html')
+    return render_template('cartoon-City.html')
 
 @views.route("/activities")
 def activity():
