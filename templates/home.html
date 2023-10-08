@@ -6,16 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinning 3D Earth</title>
     <style>
-        body {
+        html, body {
+            height: 100%;
             margin: 0;
             overflow: hidden;
+            font-family: serif;
         }
 
         canvas {
-            display: block;
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 1;
         }
 
         #fadeOverlay {
@@ -28,11 +30,70 @@
             opacity: 0;
             z-index: 2;
         }
+
+        .navbar {
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 3000;
+        }
+
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            margin: 0 30px;
+            transition: 0.4s;
+        }
+
+        .navbar a:hover {
+            background-color: white;
+            color: black;
+        }
+
+        /* Styles for the Urban text */
+        .urban-text {
+        position: fixed;
+        bottom: 65%;  
+        left: 10%;    /* Moved more to the left */
+        font-size: 150px;
+        font-family: serif;
+        color: white;
+        z-index: 3;
+        }
+
+        /* Adjusted styles for the Oceans text without the O */
+        .oceans-text {
+            position: fixed;
+            bottom: 35%;
+            left: 60%;  /* Moved more to the right */
+            font-size: 300px;  /* Increased font size */
+            font-family: serif;
+            color: white;
+            z-index: 3;
+        }
+
+        /* Add transition for opacity */
+        .urban-text, .oceans-text {
+            transition: opacity 0.5s ease-out;
+        }
+
     </style>
 </head>
 
 <body>
+    {%include 'navbar.html'%}
     <div id="fadeOverlay"></div>
+
+    <div class="urban-text">Urban</div>
+    
+    <!-- Oceans Text (Without the O) -->
+    <div class="oceans-text">ceans</div>
 
     <script src="https://threejs.org/build/three.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
@@ -41,31 +102,39 @@
         let scene, camera, renderer, earth, ocean;
         let buttonAtlantic, buttonCalifornia;
         let autoRotate = true;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
 
         init();
         animate();
 
         function init() {
+            sceneSetup();
+            earthSetup();
+            oceanSetup();
+            buttonsSetup();
+            eventSetup();
+            earth.scale.set(1.2, 1.2, 1.2);
+        }
+
+        function sceneSetup() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 5;
-
-            renderer = new THREE.WebGLRenderer({
-                antialias: true
-            });
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
+        }
 
-            let geometry = new THREE.SphereGeometry(1, 128, 128);
-            let texture = new THREE.TextureLoader().load('/static/images/earth.png');
-            let material = new THREE.MeshBasicMaterial({
-                map: texture,
-                transparent: true
-            });
+        function earthSetup() {
+            const geometry = new THREE.SphereGeometry(1, 128, 128);
+            const texture = new THREE.TextureLoader().load('/static/images/earth.png');
+            const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
             earth = new THREE.Mesh(geometry, material);
             scene.add(earth);
+        }
 
-            // Ocean
+        function oceanSetup() {
             const oceanGeometry = new THREE.PlaneGeometry(50, 50, 50, 50);
             const oceanMaterial = new THREE.MeshBasicMaterial({ color: 0x1E90FF, side: THREE.DoubleSide });
             ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
@@ -73,83 +142,51 @@
             ocean.position.y = -2;
             ocean.visible = false;
             scene.add(ocean);
-
-            // Buttons
-            const buttonGeometry = new THREE.SphereGeometry(0.1, 32, 32);
-            const buttonMaterial = new THREE.MeshBasicMaterial({
-                color: 0xff0000
-            });
-
-            buttonAtlantic = new THREE.Mesh(buttonGeometry, buttonMaterial);
-            buttonCalifornia = new THREE.Mesh(buttonGeometry, buttonMaterial);
-
-            setPositionOnEarth(buttonAtlantic, 15, -30);
-            setPositionOnEarth(buttonCalifornia, 34, -118);
-
-            earth.add(buttonAtlantic);
-            earth.add(buttonCalifornia);
-
-            window.addEventListener('resize', onWindowResize, false);
-            document.addEventListener('click', onDocumentClick, false);
         }
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        function buttonsSetup() {
+            const buttonGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+            const buttonMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            buttonAtlantic = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            buttonCalifornia = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            setPositionOnEarth(buttonAtlantic, 15, -30);
+            setPositionOnEarth(buttonCalifornia, 34, -118);
+            earth.add(buttonAtlantic, buttonCalifornia);
+        }
 
-        function onDocumentClick(event) {
-            event.preventDefault();
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects([buttonAtlantic, buttonCalifornia]);
-            if (intersects.length > 0) {
-                inTransition = true; // Set the flag
-                fadeScreenAndZoomToButton();
-            }
+        function eventSetup() {
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('click', onDocumentClick);
+            document.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('wheel', onWheelScroll, { passive: false });
         }
 
         function setPositionOnEarth(object, lat, lon) {
             const radius = 1.01;
             const phi = (90 - lat) * (Math.PI / 180);
             const theta = (lon + 180) * (Math.PI / 180);
-            object.position.x = radius * Math.sin(phi) * Math.cos(theta);
-            object.position.y = radius * Math.cos(phi);
-            object.position.z = radius * Math.sin(phi) * Math.sin(theta);
+            object.position.setFromSphericalCoords(radius, phi, theta);
+        }
+
+        function onDocumentClick(event) {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+            );
+            raycaster.setFromCamera(mouse, camera);
+            if (raycaster.intersectObjects([buttonAtlantic, buttonCalifornia]).length) {
+                fadeScreenAndZoomToButton();
+            }
         }
 
         function animate() {
-            requestAnimationFrame(animate);
-            if (autoRotate) {
-                earth.rotation.y += 0.005;
-            }
+            if (autoRotate) earth.rotation.y += 0.005;
             renderer.render(scene, camera);
             TWEEN.update();
-        }
-
-        function transitionToOceanScene() {
-            new TWEEN.Tween({ opacity: 0 })
-                .to({ opacity: 1 }, 1000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function(value) {
-                    document.getElementById('fadeOverlay').style.opacity = value.opacity;
-                })
-                .onComplete(() => {
-                    earth.visible = false;
-                    buttonAtlantic.visible = false;
-                    buttonCalifornia.visible = false;
-                    ocean.visible = true;
-                    camera.position.set(0, 5, 10);
-                    camera.lookAt(0, 0, 0);
-                    autoRotate = false;
-                    new TWEEN.Tween({ opacity: 1 })
-                        .to({ opacity: 0 }, 1000)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .onUpdate(function(value) {
-                            document.getElementById('fadeOverlay').style.opacity = value.opacity;
-                        })
-                        .start();
-                })
-                .start();
+            requestAnimationFrame(animate);
         }
 
         function onWindowResize() {
@@ -158,86 +195,51 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        document.addEventListener('wheel', onWheelScroll, {
-            passive: false
-        });
-
-        const zoomThreshold = 1.5;
-        const maxScale = 2.5;
-        const minScale = 0.5;
+        let scrollTimeout;
+        let isScrolling = false;
 
         function onWheelScroll(event) {
-            event.preventDefault();
-            const scaleFactor = 0.01;
-            if (event.deltaY > 0) {
-                earth.scale.x *= (1 + scaleFactor);
-                earth.scale.y *= (1 + scaleFactor);
-                earth.scale.z *= (1 + scaleFactor);
-            } else {
-                earth.scale.x *= (1 - scaleFactor);
-                earth.scale.y *= (1 - scaleFactor);
-                earth.scale.z *= (1 - scaleFactor);
-            }
-            if (earth.scale.x > maxScale || earth.scale.y > maxScale || earth.scale.z > maxScale) {
-                earth.scale.x = maxScale;
-                earth.scale.y = maxScale;
-                earth.scale.z = maxScale;
-            } else if (earth.scale.x < minScale || earth.scale.y < minScale || earth.scale.z < minScale) {
-                earth.scale.x = minScale;
-                earth.scale.y = minScale;
-                earth.scale.z = minScale;
-            }
-            if (earth.scale.x > zoomThreshold) {
-                autoRotate = false;
-            } else {
-                autoRotate = true;
-            }
+            const scaleFactor = event.deltaY > 0 ? 1.01 : 0.99;
+            earth.scale.multiplyScalar(scaleFactor);
+            autoRotate = earth.scale.x <= 1.5;
+
+            // Immediately hide the text upon scrolling
+            document.querySelector('.urban-text').style.opacity = '0';
+            document.querySelector('.oceans-text').style.opacity = '0';
         }
 
-        let isDragging = false;
-        let previousMousePosition = {
-            x: 0,
-            y: 0
-        };
-        document.addEventListener('mousedown', function(e) {
+
+
+        function onMouseDown(e) {
             isDragging = true;
-            previousMousePosition = {
-                x: e.clientX,
-                y: e.clientY
-            };
-        });
-        document.addEventListener('mousemove', function(e) {
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+
+        function onMouseMove(e) {
             if (!isDragging || autoRotate) return;
             const deltaX = e.clientX - previousMousePosition.x;
             const deltaY = e.clientY - previousMousePosition.y;
             earth.rotation.y += deltaX * 0.01;
             earth.rotation.x += deltaY * 0.01;
-            previousMousePosition = {
-                x: e.clientX,
-                y: e.clientY
-            };
-        });
-        document.addEventListener('mouseup', function() {
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+
+        function onMouseUp() {
             isDragging = false;
-        });
+        }
 
         function fadeScreenAndZoomToButton() {
-            const targetPosition = new THREE.Vector3().copy(buttonAtlantic.position);
-            const initialPosition = new THREE.Vector3().copy(camera.position);
-
+            const targetPosition = buttonAtlantic.position.clone();
+            const initialPosition = camera.position.clone();
             new TWEEN.Tween({ opacity: 0, zoom: 0 })
                 .to({ opacity: 1, zoom: 1 }, 1500)
                 .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function(value) {
-                    document.getElementById('fadeOverlay').style.opacity = value.opacity;
-                    camera.position.lerpVectors(initialPosition, targetPosition, value.zoom);
+                .onUpdate(({ opacity, zoom }) => {
+                    document.getElementById('fadeOverlay').style.opacity = opacity;
+                    camera.position.lerpVectors(initialPosition, targetPosition, zoom);
                     camera.lookAt(earth.position);
                 })
-                .onComplete(() => {
-                    document.getElementById('fadeOverlay').style.opacity = 0;
-                    transitionToOceanScene();
-                    inTransition = false; // Reset the flag when the transition completes
-                })
+                .onComplete(() => window.location.href = 'ocean')
                 .start();
         }
     </script>
