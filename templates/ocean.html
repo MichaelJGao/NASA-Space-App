@@ -57,7 +57,7 @@
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
-            camera.position.set(30, 800, 100);
+            camera.position.set(30, 30, 100);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -66,13 +66,16 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
 
             // Allow slight horizontal rotation
-            controls.minAzimuthAngle = -Math.PI / 16; // Rotate slightly to the left
-            controls.maxAzimuthAngle = Math.PI / 16;  // Rotate slightly to the right
+            controls.minAzimuthAngle = -Math.PI / 16;
+            controls.maxAzimuthAngle = Math.PI / 16;
 
-            // Restrict vertical rotation (polar angle) to the horizontal plane
-            controls.minPolarAngle = Math.PI / 2 - 1;  // Exactly 90 degrees (horizontal)
-            controls.maxPolarAngle = Math.PI / 2 + 0.1;  // Exactly 90 degrees (horizontal)
+            // Disable rotation
+            controls.enableRotate = false;
 
+            // Override the update function to ensure the camera always looks at the target
+            controls.update = function() {
+                this.object.lookAt(this.target);
+            };
 
             const waterGeometry = new THREE.PlaneBufferGeometry(5000, 5000);
             water = new THREE.Water(waterGeometry, {
