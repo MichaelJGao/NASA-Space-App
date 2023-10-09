@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phytoplankton Growth Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #007bff; /* Dark blue */
+            font-size: 28px;
+            margin-top: 20px;
+        }
+
+        .simulation {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .controls {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .growth-results {
+            margin-top: 20px;
+        }
+
+        #growth-rate {
+            font-weight: bold;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phytoplankton Growth Simulation</h1>
+    <div class="simulation">
+        <div class="controls">
+            <label for="light">Light Availability (0-100%):</label>
+            <input type="range" id="light" min="0" max="100" value="50">
+
+            <label for="co2">CO2 Availability (0-100%):</label>
+            <input type="range" id="co2" min="0" max="100" value="50">
+
+            <label for="nutrients">Nutrient Availability (0-100%):</label>
+            <input type="range" id="nutrients" min="0" max="100" value="50">
+
+            <label for="temperature">Temperature (0-100%):</label>
+            <input type="range" id="temperature" min="0" max="100" value="50">
+
+            <label for="ph">pH Level (0-100%):</label>
+            <input type="range" id="ph" min="0" max="100" value="50">
+        </div>
+        <div class="growth-results">
+            <p>Growth Rate per Day:</p>
+            <p id="growth-rate">Calculating...</p>
+        </div>
+    </div>
+    <script>
+        const lightSlider = document.getElementById("light");
+        const co2Slider = document.getElementById("co2");
+        const nutrientsSlider = document.getElementById("nutrients");
+        const temperatureSlider = document.getElementById("temperature");
+        const phSlider = document.getElementById("ph");
+        const growthRateElement = document.getElementById("growth-rate");
+
+        function calculateGrowthRate() {
+            const light = parseInt(lightSlider.value);
+            const co2 = parseInt(co2Slider.value);
+            const nutrients = parseInt(nutrientsSlider.value);
+            const temperature = parseInt(temperatureSlider.value);
+            const ph = parseInt(phSlider.value);
+
+            // Modify the growth rate calculation
+            let growthRate = (light + co2 + nutrients - temperature - ph) / 10; // Adjust the divisor for scaling
+
+            // Ensure the growth rate is within the range [0, 100]
+            if (growthRate < 0) {
+                growthRate = 0;
+            } else if (growthRate > 100) {
+                growthRate = 100;
+            }
+            if (light == 0) {
+                growthRate = 0;
+            }
+            if (co2 == 0) {
+                growthRate = 0;
+            }
+            if (temperature == 0 || temperature == 100) {
+                growthRate = 0;
+            }
+
+            growthRateElement.textContent = `Growth Rate per Day: ${growthRate.toFixed(2)}%`;
+        }
+
+        // Add event listeners to the sliders
+        lightSlider.addEventListener("input", calculateGrowthRate);
+        co2Slider.addEventListener("input", calculateGrowthRate);
+        nutrientsSlider.addEventListener("input", calculateGrowthRate);
+        temperatureSlider.addEventListener("input", calculateGrowthRate);
+        phSlider.addEventListener("input", calculateGrowthRate);
+
+        // Initial calculation
+        calculateGrowthRate();
+    </script>
+</body>
+</html>

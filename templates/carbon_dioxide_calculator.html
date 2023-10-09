@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>CO2 Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            color: #007bff; /* Dark blue */
+            font-size: 36px; /* Increased font size for h1 */
+        }
+        
+        .calculator {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            margin: 0 auto;
+        }
+        
+        label, input {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input {
+            padding: 5px;
+            width: 100%;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background-color: #007bff; /* Dark blue */
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #0056b3; /* Slightly darker blue on hover */
+        }
+        
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carbon Dioxide Calculator</h1>
+    <div class="calculator">
+        <label for="distance">Distance (in kilometers):</label>
+        <input type="number" id="distance" placeholder="Enter distance">
+        
+        <label for="fuel-efficiency">Fuel Efficiency (in km/liter):</label>
+        <input type="number" id="fuel-efficiency" placeholder="Enter fuel efficiency">
+        
+        <label for="fuel-price">Fuel Price (per liter):</label>
+        <input type="number" id="fuel-price" placeholder="Enter fuel price">
+        
+        <button id="calculate">Calculate CO2 Emissions</button>
+        
+        <div id="result"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const calculateButton = document.getElementById("calculate");
+            const resultElement = document.getElementById("result");
+
+            calculateButton.addEventListener("click", function () {
+                const distance = parseFloat(document.getElementById("distance").value);
+                const fuelEfficiency = parseFloat(document.getElementById("fuel-efficiency").value);
+                const fuelPrice = parseFloat(document.getElementById("fuel-price").value);
+
+                if (!isNaN(distance) && !isNaN(fuelEfficiency) && !isNaN(fuelPrice)) {
+                    const co2Emissions = (distance / fuelEfficiency) * (2.3); // Assuming 2.3 kg CO2 per liter of gasoline
+
+                    resultElement.textContent = `Estimated CO2 Emissions: ${co2Emissions.toFixed(2)} kg`;
+                } else {
+                    resultElement.textContent = "Please enter valid values for all fields.";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

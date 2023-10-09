@@ -1,300 +1,65 @@
 <!DOCTYPE html>
+
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marine Science Activities</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>Activities Page</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #007acc; /* Ocean blue background color */
-            color: #fff; /* Text color */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
-
+        
         h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .activity {
-            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-            padding: 20px;
-            border-radius: 10px;
-            margin: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .activity:hover {
-            transform: scale(1.05); /* Scale up on hover */
+            color: #007bff; /* Dark blue */
+            font-size: 70px; /* Increased font size for h1 */
         }
         
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 80%;
-            text-align: center;
-            position: relative;
-            color: #000; /* Black text color */
+        ul {
+            list-style: none;
+            padding: 0;
         }
         
-        /* Modal styles */
-        .modal-container {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            z-index: 1;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 80%;
-            max-height: 80%; /* Set a maximum height for the modal */
-            overflow-y: auto; /* Enable vertical scrollbar if needed */
-            text-align: center;
-            color: #000; /* Black text color inside modal */
+        li a {
+            text-decoration: none; /* Remove underlines from links */
         }
-
-        .close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        
+        li button {
+            background-color: #007bff; /* Dark blue */
+            color: #fff;
+            width: 275px; /* Set a fixed width for buttons */
+            height: 75px; /* Set a fixed height for buttons */
+            border: none;
             cursor: pointer;
-            color: #000; /* Black close button color */
+            margin: 10px; /* Increased margin for spacing */
+            border-radius: 10px; /* Increased border radius for rounded corners */
+            font-size: 24px; /* Increased font size for buttons */
         }
-
-        #simulation-container {
-            padding: 20px;
-            border: 2px solid #333;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
+        
+        li button:hover {
+            background-color: #0056b3; /* Slightly darker blue on hover */
+            transition: 0.3s;
         }
-
-        #controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #controls label {
-            flex: 1;
-            text-align: center;
-        }
-
-        #temperature-slider, #ph-slider, #nutrient-slider {
-            width: 100%;
-        }
-
     </style>
 </head>
 <body>
-    <h1>Marine Science Activities</h1>
-
-    <!-- Activities -->
-    <div class="activity" onclick="toggleModal('carbon-dioxide-calculator')">CARBON DIOXIDE CALCULATOR</div>
-    <div class="activity" onclick="toggleModal('ocean-trivia-quiz')">OCEAN TRIVIA QUIZ</div>
-    <div class="activity" onclick="toggleModal('simulation')">SIMULATION</div>
-    <div class="activity" onclick="toggleModal('matching-game')">MATCHING GAME</div>
-    <div class="activity" onclick="toggleModal('fill-in-the-blank')">FILL IN THE BLANK</div>
-
-    <!-- Modals -->
-    <div class="modal-container" id="carbon-dioxide-calculator-modal">
-        <div class="modal-content">
-            <h2>CARBON DIOXIDE CALCULATOR</h2>
-            <div class="close-button" onclick="toggleModal('carbon-dioxide-calculator')">X</div>
-            <h1>Carbon Dioxide Calculator</h1>
-    <form id="co2-calculator">
-        <label for="miles-driven">Miles Driven per Year:</label>
-        <input type="number" id="miles-driven" name="miles-driven" required><br><br>
-
-        <label for="electricity-usage">Electricity Usage (kWh per year):</label>
-        <input type="number" id="electricity-usage" name="electricity-usage" required><br><br>
-
-        <label for="natural-gas-usage">Natural Gas Usage (cubic meters per year):</label>
-        <input type="number" id="natural-gas-usage" name="natural-gas-usage" required><br><br>
-
-        <label for="flights-taken">Flights Taken per Year:</label>
-        <input type="number" id="flights-taken" name="flights-taken" required><br><br>
-
-        <input type="submit" value="Calculate CO2 Emissions">
-    </form>
-
-    <p>Your estimated annual CO2 emissions: <span id="result">0</span> metric tons.</p>
-
-    <script>
-        const form = document.getElementById('co2-calculator');
-        const resultElement = document.getElementById('result');
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const milesDriven = parseFloat(document.getElementById('miles-driven').value);
-            const electricityUsage = parseFloat(document.getElementById('electricity-usage').value);
-            const naturalGasUsage = parseFloat(document.getElementById('natural-gas-usage').value);
-            const flightsTaken = parseFloat(document.getElementById('flights-taken').value);
-
-            // Calculate total emissions (you can adjust the formula as needed)
-            const totalEmissions = (milesDriven * 0.5) + (electricityUsage * 0.2) + (naturalGasUsage * 0.1) + (flightsTaken * 2);
-
-            // Update the result
-            resultElement.textContent = totalEmissions.toFixed(2);
-        });
+    <h1>Activities</h1>
+    <ul id="activity-list">
+        <li><a href="carbon_dioxide_calculator.html"><button>Carbon Dioxide Calculator</button></a></li>
+        <li><a href="ocean_trivia_quiz.html"><button>Ocean Trivia Quiz</button></a></li>
+        <li><a href="simulation.html"><button>Simulation</button></a></li>
+        <li><a href="videos.html"><button>Videos</button></a></li>
+        <li><a href="additional_activities.html"><button>Case Studies</button></a></li>
+    </ul>
+    <script src="script.js">
     </script>
-        </div>
-    </div>
-
-    <div class="modal-container" id="ocean-trivia-quiz-modal">
-        <div class="modal-content">
-            <h2>OCEAN TRIVIA QUIZ</h2>
-            <form id="quiz-form">
-                <p>1. How do ocean habitats like seagrasses and mangroves help reduce carbon dioxide in the atmosphere?</p>
-                <input type="radio" name="q1" value="a"> a) By absorbing sunlight<br>
-                <input type="radio" name="q1" value="b"> b) By converting CO2 into high-value products<br>
-                <input type="radio" name="q1" value="c"> c) By emitting CO2<br><br>
-        
-                <p>2. What is the average amount of carbon stored in mangroves per hectare?</p>
-                <input type="radio" name="q2" value="a"> a) 100 tonnes<br>
-                <input type="radio" name="q2" value="b"> b) 500 tonnes<br>
-                <input type="radio" name="q2" value="c"> c) 1,000 tonnes<br><br>
-        
-                <p>3. Which ecosystems serve up to a billion people with coastal protection, fisheries, and tourism revenues?</p>
-                <input type="radio" name="q3" value="a"> a) Coral reefs<br>
-                <input type="radio" name="q3" value="b"> b) Seagrass beds<br>
-                <input type="radio" name="q3" value="c"> c) Mangroves<br><br>
-        
-                <p>4. What role does the ocean play in influencing weather and climate?</p>
-                <input type="radio" name="q4" value="a"> a) It has no impact on weather and climate<br>
-                <input type="radio" name="q4" value="b"> b) It absorbs solar radiation and distributes heat<br>
-                <input type="radio" name="q4" value="c"> c) It causes extreme weather events<br><br>
-        
-                <p>5. What do microalgae do to help reduce CO2 in the atmosphere?</p>
-                <input type="radio" name="q5" value="a"> a) They emit CO2<br>
-                <input type="radio" name="q5" value="b"> b) They convert CO2 into bioactive metabolites<br>
-                <input type="radio" name="q5" value="c"> c) They absorb CO2 and store it in the atmosphere<br><br>
-        
-                <input type="submit" value="Submit">
-            </form>
-        
-            <div id="quiz-results"></div>
-        
-            <script>
-                const quizForm = document.getElementById('quiz-form');
-                const quizResults = document.getElementById('quiz-results');
-        
-                quizForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-        
-                    const answers = {
-                        q1: quizForm.q1.value,
-                        q2: quizForm.q2.value,
-                        q3: quizForm.q3.value,
-                        q4: quizForm.q4.value,
-                        q5: quizForm.q5.value
-                    };
-        
-                    // Check answers and calculate the score
-                    let score = 0;
-                    if (answers.q1 === 'b') score++;
-                    if (answers.q2 === 'c') score++;
-                    if (answers.q3 === 'a') score++;
-                    if (answers.q4 === 'b') score++;
-                    if (answers.q5 === 'b') score++;
-        
-                    // Display the results
-                    quizResults.innerHTML = `<p>You scored ${score} out of 5</p>`;
-                });
-            </script>
-            <span class="close-button" onclick="toggleModal('ocean-trivia-quiz')">X</span>
-        </div>
-    </div>
-
-    <div class="modal-container" id="simulation-modal">
-        <div class="modal-content">
-            <h2>SIMULATION</h2>
-            <div id="controls">
-                <label for="temperature-slider">Temperature (°C): <span id="temperature">25</span></label>
-                <input type="range" id="temperature-slider" min="0" max="40" value="25" onchange="updateGrowthRate()">
-                <label for="ph-slider">pH: <span id="ph">7.0</span></label>
-                <input type="range" id="ph-slider" min="4.0" max="9.0" step="0.1" value="7.0" onchange="updateGrowthRate()">
-                <label for="nutrient-slider">Nutrient Availability: <span id="nutrient">0.5</span></label>
-                <input type="range" id="nutrient-slider" min="0.0" max="1.0" step="0.01" value="0.5" onchange="updateGrowthRate()">
-            </div>
-            <h2>Phytoplankton Growth Rate</h2>
-            <p>Growth Rate: <span id="growth-rate">1.0</span></p>
-        </div>
-        
-        <script>
-            let temperature = 25;
-            let pH = 7.0;
-            let nutrientAvailability = 0.5;
-    
-            function updateGrowthRate() {
-                temperature = parseInt(document.getElementById('temperature-slider').value);
-                pH = parseFloat(document.getElementById('ph-slider').value);
-                nutrientAvailability = parseFloat(document.getElementById('nutrient-slider').value);
-    
-                const growthRate = calculateGrowthRate(temperature, pH, nutrientAvailability);
-    
-                document.getElementById('temperature').textContent = temperature.toFixed(1);
-                document.getElementById('ph').textContent = pH.toFixed(1);
-                document.getElementById('nutrient').textContent = nutrientAvailability.toFixed(2);
-                document.getElementById('growth-rate').textContent = growthRate.toFixed(2);
-            }
-    
-            function calculateGrowthRate(temp, ph, nutrient) {
-                // A simple formula for illustration; you can replace it with a more complex model
-                return (temp * ph * nutrient) / 100;
-            }
-    
-            // Initial update
-            updateGrowthRate();
-        </script>
-            <span class="close-button" onclick="toggleModal('simulation')">X</span>
-        </div>
-    </div>
-
-    <div class="modal-container" id="matching-game-modal">
-        <div class="modal-content">
-            <h2>MATCHING GAME</h2>
-            <!-- Add content for the Matching Game here -->
-            <span class="close-button" onclick="toggleModal('matching-game')">X</span>
-        </div>
-    </div>
-
-    <div class="modal-container" id="fill-in-the-blank-modal">
-        <div class="modal-content">
-            <h2>FILL IN THE BLANK</h2>
-            <!-- Add content for the Fill in the Blank activity here -->
-            <span class="close-button" onclick="toggleModal('fill-in-the-blank')">X</span>
-        </div>
-    </div>
-
-    <script>
-        let openModalId = null;
-
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId + '-modal');
-
-            if (openModalId && openModalId !== modalId) {
-                const previousModal = document.getElementById(openModalId + '-modal');
-                previousModal.style.display = 'none';
-            }
-
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-            openModalId = modal.style.display === 'block' ? modalId : null;
-        }
-    </script>
+    {%include 'navbar.html'%}
 </body>
 </html>

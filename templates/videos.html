@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #007bff; /* Dark blue */
+            font-size: 40px;
+            margin-top: 20px;
+        }
+        h2{
+            margin-top:20px;
+        }
+
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px; /* Add some padding to the top */
+        }
+
+        .video-card {
+            margin: 10px;
+            max-width: 560px;
+        }
+
+        .video-description {
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Gallery</h1>
+    <div class="video-container">
+        <div class="video-card">
+            <h2>Phytoplankton Under a Microscope</h2>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/q1EA3MIPURU?si=WjvZb6Uglo61Z5ho" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p class="video-description">Explore the fascinating world of phytoplankton as we use a powerful microscope to examine its complex shapes and brilliant colors. The beauty and diversity that exist below the surface of our oceans and waterways are revealed in this movie, which provides a close-up perspective of these small aquatic species.</p>
+        </div>
+        <div class="video-card">
+            <h2>More Microscopic Image and Different Species of Phytoplankton</h2>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Khqj4yA_ksw?si=JbsZE7LZAUMt0WpU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p class="video-description">Another video displaying the small world of phytoplankton. This video contains the different species of phytoplankton. Explore the different shapes and sizes of these extremely diverse species</p>
+        </div>
+        <div class="video-card">
+            <h2>Important World of Phytoplankton</h2>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/1xl5Z1d3wcQ?si=PVWxH7q7AdU9iztz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p class="video-description">Ivona Cetinić, the Science Lead for Ocean Biogeochemistry for PACE (Plankton, Aerosol, Cloud, ocean Ecosystem) describes the weird, wonderful and important world of phytoplankton and why it's important for the PACE mission to study these tiny creatures.</p>
+        </div>
+        <!-- Add more video cards as needed -->
+    </div>
+</body>
+</html>
