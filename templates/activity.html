@@ -1,56 +1,13 @@
 <!DOCTYPE html>
-
-
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="static/css/activity.css"> <!-- Linking the external CSS file -->
     <title>Activities Page</title>
-    <style>
-        body {
-            font-family: serif;
-            text-align: center;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-        
-        h1 {
-            color: #007bff; /* Dark blue */
-            font-size: 70px; /* Increased font size for h1 */
-            font-family: serif;
-        }
-        
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        li a {
-            text-decoration: none; /* Remove underlines from links */
-            font-family: serif;
-        }
-        
-        li button {
-            background-color: #007bff; /* Dark blue */
-            color: #fff;
-            width: 275px; /* Set a fixed width for buttons */
-            height: 75px; /* Set a fixed height for buttons */
-            border: none;
-            cursor: pointer;
-            margin: 10px; /* Increased margin for spacing */
-            border-radius: 10px; /* Increased border radius for rounded corners */
-            font-size: 24px; /* Increased font size for buttons */
-        }
-        
-        li button:hover {
-            background-color: #0056b3; /* Slightly darker blue on hover */
-            transition: 0.3s;
-        }
-    </style>
 </head>
+
 <body>
     <h1>Activities</h1>
     <ul id="activity-list">
@@ -60,8 +17,7 @@
         <li><a href="/videos"><button>Videos</button></a></li>
         <li><a href="/additional-activities"><button>Case Studies</button></a></li>
     </ul>
-    <script src="script.js">
-    </script>
     {%include 'navbar.html'%}
 </body>
+
 </html>
