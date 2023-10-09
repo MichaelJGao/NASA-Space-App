@@ -23,27 +23,27 @@ def city():
     return render_template('cartoon-City.html')
 
 @views.route("/activities")
-def activity():
+def activities():
     return render_template('activity.html')
 
-@views.route("/carbon_dioxide_calculator")
-def activity():
+@views.route("/carbon-dioxide-calculator")
+def carbon():
     return render_template('carbon_dioxide_calculator.html')
 
-@views.route("/ocean_trivia_quiz")
-def activity():
-    return render_template('ocean_trivia_quiz.html')
+@views.route("/ocean-trivia-quiz")
+def quiz():
+    return render_template('ocean-trivia-quiz.html')
 
 @views.route("/simulation")
-def activity():
+def sim():
     return render_template('simulation.html')
 
 @views.route("/videos")
-def activity():
+def vid():
     return render_template('videos.html')
 
-@views.route("/additional_activities")
-def activity():
-    return render_template('additional_activities.html')
+@views.route("/additional-activities")
+def add():
+    return render_template('additional-activities.html')
 
 
