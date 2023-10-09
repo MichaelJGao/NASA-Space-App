@@ -3,62 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="static/css/carbon-dioxide-calculator.css">
+    <script src="static/js/carbon-dioxide-calculator.js" defer></script>
     <title>CO2 Calculator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-        
-        h1 {
-            color: #007bff; /* Dark blue */
-            font-size: 36px; /* Increased font size for h1 */
-        }
-        
-        .calculator {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            margin: 0 auto;
-        }
-        
-        label, input {
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        input {
-            padding: 5px;
-            width: 100%;
-            border: 1px solid #ccc;
-        }
-        
-        button {
-            background-color: #007bff; /* Dark blue */
-            color: #fff;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            border-radius: 5px;
-        }
-        
-        button:hover {
-            background-color: #0056b3; /* Slightly darker blue on hover */
-        }
-        
-        #result {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 20px;
-        }
-    </style>
 </head>
 <body>
     <h1>Carbon Dioxide Calculator</h1>
@@ -76,25 +23,5 @@
         
         <div id="result"></div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const calculateButton = document.getElementById("calculate");
-            const resultElement = document.getElementById("result");
-
-            calculateButton.addEventListener("click", function () {
-                const distance = parseFloat(document.getElementById("distance").value);
-                const fuelEfficiency = parseFloat(document.getElementById("fuel-efficiency").value);
-                const fuelPrice = parseFloat(document.getElementById("fuel-price").value);
-
-                if (!isNaN(distance) && !isNaN(fuelEfficiency) && !isNaN(fuelPrice)) {
-                    const co2Emissions = (distance / fuelEfficiency) * (2.3); // Assuming 2.3 kg CO2 per liter of gasoline
-
-                    resultElement.textContent = `Estimated CO2 Emissions: ${co2Emissions.toFixed(2)} kg`;
-                } else {
-                    resultElement.textContent = "Please enter valid values for all fields.";
-                }
-            });
-        });
-    </script>
 </body>
 </html>

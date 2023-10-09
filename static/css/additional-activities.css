@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #007bff; /* Dark blue */
+    font-size: 28px;
+    margin-top: 20px;
+}
+
+.case-study {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.case-study img {
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+.case-title {
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.case-description {
+    font-size: 16px;
+    margin-top: 10px;
+    text-align: left; /* Align description text to the left */
+}
