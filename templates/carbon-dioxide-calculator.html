@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/carbon-dioxide-calculator.css">
+    <script src="static/js/carbon-dioxide-calculator.js" defer></script>
+    <title>CO2 Calculator</title>
+</head>
+<body>
+    <h1>Carbon Dioxide Calculator</h1>
+    <div class="calculator">
+        <label for="distance">Distance (in kilometers):</label>
+        <input type="number" id="distance" placeholder="Enter distance">
+        
+        <label for="fuel-efficiency">Fuel Efficiency (in km/liter):</label>
+        <input type="number" id="fuel-efficiency" placeholder="Enter fuel efficiency">
+        
+        <label for="fuel-price">Fuel Price (per liter):</label>
+        <input type="number" id="fuel-price" placeholder="Enter fuel price">
+        
+        <button id="calculate">Calculate CO2 Emissions</button>
+        
+        <div id="result"></div>
+    </div>
+</body>
+</html>

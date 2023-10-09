@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Scene Test</title>
+    <link rel="stylesheet" href="static/css/ocean.css">
+    
+    <!-- Vertex and Fragment Shaders for the Gradient Sky -->
+    <script type="x-shader/x-vertex" id="vertexShader">
+        varying vec3 vWorldPosition;
+        void main() {
+            vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+            vWorldPosition = worldPosition.xyz;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
+    <!-- GLSL gradient background shader -->
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        uniform vec3 topColor;
+        uniform vec3 bottomColor;
+        uniform float offset;
+        uniform float exponent;
+        varying vec3 vWorldPosition;
+        void main() {
+            float h = normalize( vWorldPosition + offset ).y;
+            gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max(h, 0.0), exponent ), 0.0 ) ), 1.0 );
+        }
+    </script>
+
+    <!-- External JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/objects/Water.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
+
+    <script src="static/js/ocean.js"></script>
+</head>
+
+<body>
+    <!-- Modals -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal1">&times;</span>
+            <h2>Carbon Dioxide Mitigation in the Ocean</h2>
+            <p>By absorbing and storing carbon dioxide from the atmosphere, the ocean plays a crucial role in preventing climate change. Mangrove and seagrass ecosystems, for example, provide this function more efficiently than terrestrial forests. Mangroves in particular store a lot of carbon, 1,000 tonnes per hectare, and also benefit fisheries and coastline protection. Coral reefs are also crucial for sequestering carbon and provide key services like coastal protection and tourism money, despite their limited coverage. Another way to convert ambient CO2 into useful goods and support efforts to reduce carbon emissions is through the growth of microalgae.</p>
+        </div>
+    </div>
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal2">&times;</span>
+            <h2>Phytoplankton growth rate impacts carbon dioxide downdraw.</h2>
+            <p>
+                Phytoplankton, tiny marine organisms, play a significant role in carbon dioxide downdraw from the atmosphere. They can collectively absorb millions of tons of carbon dioxide daily, contributing to the reduction of global carbon dioxide levels. Although the exact percentage varies due to data discrepancies, phytoplankton are estimated to mitigate 10-20% of the yearly global carbon dioxide production.
+                The color of the ocean surface is also closely linked to phytoplankton production. Chlorophyll, a pigment present in phytoplankton, absorbs light in the blue and red parts of the electromagnetic spectrum while reflecting green light. When phytoplankton levels increase, the ocean's color shifts from blue to green, indicating higher phytoplankton abundance. This color change serves as a visible indicator of phytoplankton productivity and their vital role in carbon cycling within the marine ecosystem.
+            </p>
+        </div>
+    </div>
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal3">&times;</span>
+            <h2>Are the relative abundances of different species of phytoplankton generally smaller in number compared to species concentrations on land?</h2>
+            <p>Due to fundamental variations in climatic conditions and ecological interactions, the relative abundances of bigger diatom phytoplankton and smaller phytoplankton, including Prochlorococcus, in the ocean do not directly correspond to species concentrations on land. With ocean phytoplankton adapted to low-nutrient environments and varying light levels at different depths, nutrient and light dynamics in aquatic ecosystems differ from those on land. Direct comparisons are difficult since these adaptations provide distinctive ecological niches. In contrast to terrestrial plants, which have significantly longer life cycles and a variety of reproductive techniques, phytoplankton frequently have brief life cycles that enable fast population expansion in response to environmental changes. Additionally, the distinctness of abundance patterns in the marine environment is highlighted by the fact that the specialized interactions and niches held by phytoplankton in the open ocean and coastal regions lack clear analogs in terrestrial ecosystems.</p>
+        </div>
+    </div>
+    <div id="modal4" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modal4">&times;</span>
+            <h2>Different Variables That Affect Phytoplankton</h2>
+            <p>
+                Phytoplankton, vital microorganisms in the marine ecosystem, are influenced by several key environmental factors. Light availability is crucial for their photosynthesis, with insufficient light hindering growth. Rising atmospheric carbon dioxide, linked to global warming, affects their populations and shifts dominance from larger diatoms to smaller types, altering pH levels. Nutrient scarcity, including Nitrogen, Phosphorus, Silicon, and Iron, can impact their growth and species composition for example, if nutrients are low the growth rate will decrease and vise versa. Temperature variations, with warmer conditions favoring growth, and pH levels, affecting structural integrity and species composition, all collectively shape phytoplankton dynamics in the ocean.
+            </p>
+        </div>
+    </div>
+
+    {%include 'navbar.html'%}
+</body>
+</html>

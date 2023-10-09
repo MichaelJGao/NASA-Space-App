@@ -1,0 +1,41 @@
+body {
+    font-family: serif;
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #007bff; /* Dark blue */
+    font-size: 70px; 
+    font-family: serif;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li a {
+    text-decoration: none; /* Remove underlines from links */
+    font-family: serif;
+}
+
+li button {
+    background-color: #007bff; /* Dark blue */
+    color: #fff;
+    width: 275px; 
+    height: 75px; 
+    border: none;
+    cursor: pointer;
+    margin: 10px; 
+    border-radius: 10px; 
+    font-size: 24px; 
+}
+
+li button:hover {
+    background-color: #0056b3; /* Slightly darker blue on hover */
+    transition: 0.3s;
+}
