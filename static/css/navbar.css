@@ -5,8 +5,8 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    display: flex; /* Use flexbox for layout */
-    flex-direction: column; /* Stack child elements vertically */
+    display: flex; 
+    flex-direction: column; 
 }
 
 /* Navbar Styling */
@@ -14,12 +14,12 @@ body {
     background: transparent;
     overflow: hidden; /* Keep child elements contained */
     width: 100%;
-    display: flex; /* Flexbox for horizontal alignment of links */
+    display: flex; 
     justify-content: center; /* Center links horizontally */
     align-items: center; /* Center links vertically */
     position: sticky; /* Sticky position to stay at bottom */
     bottom: 0;
-    z-index: 1000; /* High z-index to ensure it appears on top of other elements */
+    z-index: 1000; 
 }
 
 /* Navbar links styling */
@@ -29,9 +29,9 @@ body {
     text-align: center;
     align-items: center; /* Center text vertically */
     padding: 1rem 2rem; /* Padding for link spacing */
-    text-decoration: none; /* Remove underlines */
+    text-decoration: none; 
     margin: 0 30px; /* Margin between links */
-    transition: all 0.4s ease; /* Smooth transition for hover effects */
+    transition: all 0.4s ease;
 }
 
 /* Navbar links hover effect */

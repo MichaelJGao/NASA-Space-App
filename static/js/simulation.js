@@ -1,4 +1,4 @@
-// Get elements for simulation controls
+// Elements for simulation controls
 const lightSlider = document.getElementById("light");
 const co2Slider = document.getElementById("co2");
 const nutrientsSlider = document.getElementById("nutrients");
@@ -6,7 +6,7 @@ const temperatureSlider = document.getElementById("temperature");
 const phSlider = document.getElementById("ph");
 const growthRateElement = document.getElementById("growth-rate");
 
-// Calculate growth rate based on input values
+// Growth rate based on input values
 function calculateGrowthRate() {
     const light = parseInt(lightSlider.value);
     const co2 = parseInt(co2Slider.value);
@@ -14,10 +14,10 @@ function calculateGrowthRate() {
     const temperature = parseInt(temperatureSlider.value);
     const ph = parseInt(phSlider.value);
 
-    // Modify the growth rate calculation
+    // Growth rate calculation
     let growthRate = (light + co2 + nutrients - temperature - ph) / 10; // Adjust the divisor for scaling
 
-    // Ensure the growth rate is within the range [0, 100]
+    // Growth rate is within the range [0, 100]
     growthRate = Math.min(Math.max(growthRate, 0), 100);
     if (light === 0 || co2 === 0 || temperature === 0 || temperature === 100) {
         growthRate = 0;
@@ -33,5 +33,5 @@ nutrientsSlider.addEventListener("input", calculateGrowthRate);
 temperatureSlider.addEventListener("input", calculateGrowthRate);
 phSlider.addEventListener("input", calculateGrowthRate);
 
-// Initial calculation
+// Calculation
 calculateGrowthRate();

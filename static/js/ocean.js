@@ -25,7 +25,7 @@ let scene, camera, renderer, water;
         // disable camera movement
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enabled = false;
-
+        // Create a water surface and add sunlight to the scene
         const waterGeometry = new THREE.PlaneBufferGeometry(5000, 5000);
         water = new THREE.Water(waterGeometry, {
             textureWidth: 512,

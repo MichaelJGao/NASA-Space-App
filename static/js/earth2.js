@@ -6,7 +6,7 @@ let previousMousePosition = { x: 0, y: 0 };
 
 init();
 animate();
-
+//setup
 function init() {
     sceneSetup();
     earthSetup();
@@ -24,7 +24,7 @@ function sceneSetup() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 }
-
+//creating sphere and texture
 function earthSetup() {
     const geometry = new THREE.SphereGeometry(1, 128, 128);
     const texture = new THREE.TextureLoader().load('/static/images/earth2.png');
@@ -32,7 +32,7 @@ function earthSetup() {
     earth = new THREE.Mesh(geometry, material);
     scene.add(earth);
 }
-
+//creating ocean and uploading texture
 function oceanSetup() {
     const oceanGeometry = new THREE.PlaneGeometry(50, 50, 50, 50);
     const oceanMaterial = new THREE.MeshBasicMaterial({ color: 0x1E90FF, side: THREE.DoubleSide });
@@ -42,7 +42,7 @@ function oceanSetup() {
     ocean.visible = false;
     scene.add(ocean);
 }
-
+//red clickable button
 function buttonsSetup() {
     const buttonGeometry = new THREE.SphereGeometry(0.05, 32, 32);
     const buttonMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -80,7 +80,7 @@ function onDocumentClick(event) {
         fadeScreenAndZoomToButton();
     }
 }
-
+//animating earth rotation
 function animate() {
     if (autoRotate) earth.rotation.y += 0.005;
     renderer.render(scene, camera);
@@ -93,7 +93,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
+//zoom in on scroll
 function onWheelScroll(event) {
     const scaleFactor = event.deltaY > 0 ? 1.01 : 0.99;
     earth.scale.multiplyScalar(scaleFactor);
@@ -117,7 +117,7 @@ function onMouseMove(e) {
 function onMouseUp() {
     isDragging = false;
 }
-
+//transition to city
 function fadeScreenAndZoomToButton() {
     const targetPosition = buttonAtlantic.position.clone();
     const initialPosition = camera.position.clone();

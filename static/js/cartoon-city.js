@@ -4,18 +4,19 @@ init();
 animate();
 
 function init() {
+    //camera perspective
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87CEFA);
     camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
     camera.position.set(0, 50, 100);
     camera.lookAt(0, -15, 0);
-
+    //shadows
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
-
+    //camera zoom distance
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.minAzimuthAngle = -Math.PI / 8;
     controls.maxAzimuthAngle = Math.PI / 8;
@@ -27,7 +28,7 @@ function init() {
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
-
+    //shadows details
     const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
     sunLight.position.set(50, 100, 50);
     sunLight.castShadow = true;
@@ -50,7 +51,7 @@ function init() {
     renderer.domElement.addEventListener('click', onClick, false);
     window.addEventListener('resize', onWindowResize, false);
 }
-
+//base
 function createGround(texture, yLevel = -11) {
     const groundGeometry = new THREE.PlaneGeometry(5000, 5000);
     const groundMaterial = new THREE.MeshLambertMaterial({ map: texture });
@@ -108,7 +109,7 @@ function createCity() {
 }
 
 
-
+//creating the park model
 function createPark() {
     const treeColors = [0x228B22, 0x32CD32, 0x008000];
     const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
@@ -190,7 +191,7 @@ function createMansions() {
 
 
 
-
+//creating question mark positions
 function addQuestionMarks() {
     const questionMarkPositions = [
         { x: -43, y: 5, z: -20 },
@@ -223,7 +224,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
+//click transition
 function onClick(event) {
     event.preventDefault();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -234,7 +235,7 @@ function onClick(event) {
 
     if (intersects.length > 0) openModal(`modal${clickableObjects.indexOf(intersects[0].object) + 1}`);
 }
-
+//modal function
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.style.display = "block";

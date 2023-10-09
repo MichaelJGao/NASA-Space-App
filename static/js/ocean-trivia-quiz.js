@@ -1,4 +1,4 @@
-// Define the quiz questions and answers
+//Questions and Multiple Choice Answers
 const questions = [
     {
         question: "How do ocean habitats such as seagrasses and mangroves help sequester carbon dioxide?",
@@ -55,13 +55,13 @@ const questions = [
 let currentQuestionIndex = 0; // Track the current question
 let score = 0; // Track the user's score
 
-// Get references to HTML elements
+// References to HTML elements
 const questionElement = document.getElementById("question");
 const choicesElement = document.getElementById("choices");
 const nextButton = document.getElementById("next");
 const scoreElement = document.getElementById("score");
 
-// Display the current question and choices
+// Display of current question and choices
 function displayQuestion() {
     const question = questions[currentQuestionIndex];
     questionElement.textContent = question.question;
@@ -75,7 +75,7 @@ function displayQuestion() {
     });
 }
 
-// Check the user's answer and update the score
+// Checking the user's answer and update the score
 function checkAnswer(event) {
     const selectedAnswer = event.target.textContent;
     const correctAnswer = questions[currentQuestionIndex].correctAnswer;
@@ -93,7 +93,7 @@ function checkAnswer(event) {
     }
 }
 
-// Display the final score after the quiz ends
+// Final score after the quiz ends
 function endQuiz() {
     questionElement.textContent = "Quiz Completed!";
     choicesElement.innerHTML = "";
@@ -110,5 +110,5 @@ nextButton.addEventListener("click", () => {
     }
 });
 
-// Start the quiz by displaying the first question
+// Quiz Starts by displaying the first question
 displayQuestion();

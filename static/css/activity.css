@@ -9,7 +9,7 @@ body {
 
 h1 {
     color: #007bff; /* Dark blue */
-    font-size: 70px; /* Increased font size for h1 */
+    font-size: 70px; 
     font-family: serif;
 }
 
@@ -26,13 +26,13 @@ li a {
 li button {
     background-color: #007bff; /* Dark blue */
     color: #fff;
-    width: 275px; /* Set a fixed width for buttons */
-    height: 75px; /* Set a fixed height for buttons */
+    width: 275px; 
+    height: 75px; 
     border: none;
     cursor: pointer;
-    margin: 10px; /* Increased margin for spacing */
-    border-radius: 10px; /* Increased border radius for rounded corners */
-    font-size: 24px; /* Increased font size for buttons */
+    margin: 10px; 
+    border-radius: 10px; 
+    font-size: 24px; 
 }
 
 li button:hover {
