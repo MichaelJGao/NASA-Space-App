@@ -3,26 +3,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 let scene, camera, renderer, water;
 
-    // Raycaster and mouse for detecting clicks on objects
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    // Array to hold our question marks for raycasting
+    //Ray Casting
     const clickableObjects = [];
-
+    //Scene setup
     init();
     animate();
-
+    //Three.js scene
     function init() {
+        //camera setup
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
         camera.position.set(30, 30, 100);
-
+        //render setup
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Controls are initialized never enabled, disabling camera movement
+        // disable camera movement
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enabled = false;
 
@@ -47,16 +47,16 @@ let scene, camera, renderer, water;
         sun.position.set(100, 100, 100);
         scene.add(sun);
 
-        // Add fog to the scene
+        // fog to the scene
         scene.fog = new THREE.FogExp2(0xC6E2FF, 0.0005);
 
         // Gradient Sky
         createGradientSky();
 
-        // Add the 3D question marks
+        // 3D QuestionMark
         addQuestionMarks();
 
-        // Event listener for clicks to handle modal
+        // Event listener
         renderer.domElement.addEventListener('click', onClick, false);
 
         window.addEventListener('resize', onWindowResize, false);
@@ -88,7 +88,7 @@ let scene, camera, renderer, water;
     }
 
     function addQuestionMarks() {
-        // Load a font
+        // font
         const loader = new THREE.FontLoader();
         loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
             const textGeometry = new THREE.TextGeometry('?', {
