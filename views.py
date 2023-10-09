@@ -26,3 +26,24 @@ def city():
 def activity():
     return render_template('activity.html')
 
+@views.route("/carbon_dioxide_calculator")
+def activity():
+    return render_template('/carbon_dioxide_calculator.html')
+
+@views.route("/ocean_trivia_quiz")
+def activity():
+    return render_template('ocean_trivia_quiz.html')
+
+@views.route("/simulation")
+def activity():
+    return render_template('simulation.html')
+
+@views.route("/videos")
+def activity():
+    return render_template('videos.html')
+
+@views.route("/additional_activities")
+def activity():
+    return render_template('additional_activities.html')
+
+
