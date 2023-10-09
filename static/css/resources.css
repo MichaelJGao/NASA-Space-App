@@ -1,0 +1,57 @@
+/* Basic styling for the body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Styling for the header */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+}
+
+/* Styling for main headings */
+h1 {
+    font-size: 36px;
+}
+
+/* Styling for the container holding resources */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: left;
+    width: 700px;
+}
+
+/* Styling for individual resources */
+.resource {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.resource h2 {
+    font-size: 24px;
+    color: black;
+}
+
+.resource p {
+    font-size: 16px;
+    color: black;
+}
+
+/* Styling for links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
