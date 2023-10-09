@@ -28,7 +28,7 @@ def activities():
 
 @views.route("/carbon-dioxide-calculator")
 def carbon():
-    return render_template('carbon_dioxide_calculator.html')
+    return render_template('carbon-dioxide-calculator.html')
 
 @views.route("/ocean-trivia-quiz")
 def quiz():
