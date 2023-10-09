@@ -1,14 +1,17 @@
+
 let scene, camera, renderer, earth, ocean;
 let buttonAtlantic, buttonCalifornia;
 let autoRotate = true;
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 
+// When the DOM content is loaded, call the init() function and start the animation
 document.addEventListener('DOMContentLoaded', (event) => {
     init();
     animate();
 });
 
+//scene, camera, and other elements
 function init() {
     sceneSetup();
     earthSetup();
@@ -18,6 +21,7 @@ function init() {
     earth.scale.set(1.2, 1.2, 1.2);
 }
 
+// Three.js
 function sceneSetup() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -27,6 +31,7 @@ function sceneSetup() {
     document.body.appendChild(renderer.domElement);
 }
 
+// Earth sphere
 function earthSetup() {
     const geometry = new THREE.SphereGeometry(1, 128, 128);
     const texture = new THREE.TextureLoader().load('/static/images/earth.png');
@@ -35,6 +40,7 @@ function earthSetup() {
     scene.add(earth);
 }
 
+// ocean plane
 function oceanSetup() {
     const oceanGeometry = new THREE.PlaneGeometry(50, 50, 50, 50);
     const oceanMaterial = new THREE.MeshBasicMaterial({ color: 0x1E90FF, side: THREE.DoubleSide });
@@ -45,6 +51,7 @@ function oceanSetup() {
     scene.add(ocean);
 }
 
+// buttons on the Earth
 function buttonsSetup() {
     const buttonGeometry = new THREE.SphereGeometry(0.05, 32, 32);
     const buttonMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -64,6 +71,7 @@ function eventSetup() {
     document.addEventListener('wheel', onWheelScroll, { passive: false });
 }
 
+// object position
 function setPositionOnEarth(object, lat, lon) {
     const radius = 1.01;
     const phi = (90 - lat) * (Math.PI / 180);
@@ -83,6 +91,7 @@ function onDocumentClick(event) {
     }
 }
 
+// Animation
 function animate() {
     if (autoRotate) earth.rotation.y += 0.005;
     renderer.render(scene, camera);
@@ -90,30 +99,31 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
+// window resize
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+// mouse wheel scroll
 let scrollTimeout;
 let isScrolling = false;
-
 function onWheelScroll(event) {
     const scaleFactor = event.deltaY > 0 ? 1.01 : 0.99;
     earth.scale.multiplyScalar(scaleFactor);
     autoRotate = earth.scale.x <= 1.5;
-
-    // Immediately hide the text upon scrolling
     document.querySelector('.urban-text').style.opacity = '0';
     document.querySelector('.oceans-text').style.opacity = '0';
 }
 
+// mouse down
 function onMouseDown(e) {
     isDragging = true;
     previousMousePosition = { x: e.clientX, y: e.clientY };
 }
 
+// mouse move
 function onMouseMove(e) {
     if (!isDragging || autoRotate) return;
     const deltaX = e.clientX - previousMousePosition.x;
@@ -123,10 +133,12 @@ function onMouseMove(e) {
     previousMousePosition = { x: e.clientX, y: e.clientY };
 }
 
+// mouse up
 function onMouseUp() {
     isDragging = false;
 }
 
+// zoom into button
 function fadeScreenAndZoomToButton() {
     const targetPosition = buttonAtlantic.position.clone();
     const initialPosition = camera.position.clone();
