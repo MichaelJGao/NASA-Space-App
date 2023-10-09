@@ -17,3 +17,12 @@ def analogyEarth():
 @views.route("/resources")
 def resources():
     return render_template('resources.html')
+
+@views.route("/city")
+def city():
+    return render_template('cartoon-City.html')
+
+@views.route("/activities")
+def activity():
+    return render_template('activity.html')
+

@@ -114,12 +114,12 @@
         }
 
         function buttonsSetup() {
-            const buttonGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+            const buttonGeometry = new THREE.SphereGeometry(0.05, 32, 32);
             const buttonMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
             buttonAtlantic = new THREE.Mesh(buttonGeometry, buttonMaterial);
             buttonCalifornia = new THREE.Mesh(buttonGeometry, buttonMaterial);
-            setPositionOnEarth(buttonAtlantic, 15, -30);
-            setPositionOnEarth(buttonCalifornia, 34, -118);
+            setPositionOnEarth(buttonAtlantic, 30, 150);
+            setPositionOnEarth(buttonCalifornia, 55, 240);
             earth.add(buttonAtlantic, buttonCalifornia);
         }
 
@@ -202,7 +202,7 @@
                     camera.position.lerpVectors(initialPosition, targetPosition, zoom);
                     camera.lookAt(earth.position);
                 })
-                .onComplete(() => window.location.href = 'ocean')
+                .onComplete(() => window.location.href = 'city')
                 .start();
         }
     </script>

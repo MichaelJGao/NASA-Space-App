@@ -9,8 +9,10 @@
         body {
             margin: 0;
             overflow: hidden;
+            /* Sky gradient background */
+            background: linear-gradient(to bottom, #87CEFA, #E0FFFF);
         }
-
+    
         canvas {
             display: block;
             position: absolute;
@@ -26,11 +28,11 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
 
         .modal-content {
+            color: black;
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
@@ -49,120 +51,131 @@
 </head>
 
 <body>
+    {%include 'navbar.html'%}
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        let scene, camera, renderer;
-
-        // Raycaster and mouse for detecting clicks on objects
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        // Array to hold our question marks for raycasting
-        const clickableObjects = [];
+        let scene, camera, renderer, raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2(), clickableObjects = [];
 
         init();
         animate();
 
         function init() {
             scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEFA);
             camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
-            camera.position.set(200, 80, 200);  
-            camera.lookAt(0, 15, 0);
+            camera.position.set(0, 50, 100);
+            camera.lookAt(0, -15, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;  // Enable shadow in the renderer
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use Soft Shadow Map for smoother shadows
             document.body.appendChild(renderer.domElement);
 
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            // Add the sun
+            const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+            const sunMaterial = new THREE.MeshBasicMaterial({color: 0xFFFF00}); // Yellow for the sun
+            const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            sun.position.set(50, 50, -50);
+            scene.add(sun);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            // Adjust OrbitControls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.minAzimuthAngle = -Math.PI / 8; // -45 degrees to the left
+            controls.maxAzimuthAngle = Math.PI / 8;  // 45 degrees to the right
+            controls.minPolarAngle = Math.PI / 4;    // 45 degrees from the top
+            controls.maxPolarAngle = 2 * Math.PI / 4; // 45 degrees from the bottom
+            controls.minDistance = 50; // Minimum zoom distance
+            controls.maxDistance = 200; // Maximum zoom distance
+
+            controls.enablePan = false;
+
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
             scene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(50, 100, 50);
-            scene.add(directionalLight);
+            const sunLight = new THREE.DirectionalLight(0xffffff, 1.2); // Increased intensity to 1.2
+            sunLight.position.set(50, 100, 50);
+            sunLight.castShadow = true; // Enable shadows
+            sunLight.shadow.mapSize.width = 512;   // Shadow quality
+            sunLight.shadow.mapSize.height = 512;
+            sunLight.shadow.camera.near = 0.5;     // Adjust these values for shadow frustum
+            sunLight.shadow.camera.far = 500;
+            scene.add(sunLight);
 
-            // Add enhanced city buildings with details
+            const textureLoader = new THREE.TextureLoader();
+            const grassTexture = textureLoader.load('static/images/grass.jpg'); // Replace with your grass texture path
+            const mansionTexture = textureLoader.load('static/images/mansion.png');
+
+            createGround(grassTexture);
             createCity();
-
-            // Add roads and sidewalks
-            createRoads();
-
-            // Add a park with trees and benches
             createPark();
-
-            // Add detailed and scattered cartoon-style mansions
-            createMansions();
-
-            // Add the 3D question marks
+            createMansions(mansionTexture);
             addQuestionMarks();
 
-            // Event listener for clicks to handle modal
             renderer.domElement.addEventListener('click', onClick, false);
-
             window.addEventListener('resize', onWindowResize, false);
         }
 
+        function createGround(texture, yLevel = -11) {
+            const groundGeometry = new THREE.PlaneGeometry(5000, 5000);  // Adjusted size
+            const groundMaterial = new THREE.MeshLambertMaterial({ map: texture });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = yLevel;
+            ground.receiveShadow = true; // Ground can receive shadows
+            scene.add(ground);
+        }
+
         function createCity() {
-            const buildingColors = [0xff9999, 0x99ff99, 0x9999ff, 0xffff99];
             const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x888888 });
             const windowMaterial = new THREE.MeshLambertMaterial({ color: 0xccddff });
+            const supermarketMaterial = new THREE.MeshLambertMaterial({ color: 0xDAA520 }); // Golden color for supermarket
+
+            const cityZOffset = -20;  // Adjust this value to move the city more or less in the Z direction
+            const cityXOffset = 30;  // Adjust this value to move the city more or less in the X direction
 
             for (let i = -40; i <= -10; i += 5) {
                 for (let j = -10; j <= 10; j += 5) {
                     const height = Math.random() * 30 + 10;
-                    const geometry = new THREE.BoxGeometry(4, height, 4);
-                    const building = new THREE.Mesh(geometry, buildingMaterial);
-                    building.position.set(i, height / 2 - 10, j);
+                    const building = new THREE.Mesh(new THREE.BoxGeometry(4, height, 4), buildingMaterial);
+                    building.position.set(i + cityXOffset, height / 2 - 10, j + cityZOffset);
                     scene.add(building);
 
-                    // Add windows to buildings for detail
                     const windowGeometry = new THREE.BoxGeometry(1, 1, 0.05);
                     for (let w = -1; w <= 1; w += 2) {
                         for (let h = 5; h < height; h += 3) {
                             const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-                            windowMesh.position.set(i + w, h - 10, j + 2);
+                            windowMesh.position.set(i + w + cityXOffset, h - 10, j + 2 + cityZOffset);
                             scene.add(windowMesh);
 
-                            const windowMeshOpposite = new THREE.Mesh(windowGeometry, windowMaterial);
-                            windowMeshOpposite.position.set(i + w, h - 10, j - 2);
+                            const windowMeshOpposite = windowMesh.clone();
+                            windowMeshOpposite.position.z = j - 2 + cityZOffset;
                             scene.add(windowMeshOpposite);
                         }
                     }
                 }
             }
+
+            // Supermarket
+            const supermarketGeom = new THREE.BoxGeometry(20, 10, 20);
+            const supermarket = new THREE.Mesh(supermarketGeom, supermarketMaterial);
+            supermarket.position.set(-70 + cityXOffset, -5, cityZOffset);  // Positioned behind the apartment buildings
+            scene.add(supermarket);
+
+            // Supermarket label
+            new THREE.FontLoader().load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                const labelGeometry = new THREE.TextGeometry('SUPERMARKET', { font: font, size: 2, height: 0.1 });
+                const labelMesh = new THREE.Mesh(labelGeometry, new THREE.MeshLambertMaterial({ color: 0xffffff })); // White color for the text
+                labelMesh.position.set(supermarket.position.x - 10, supermarket.position.y + 6, supermarket.position.z + 10); // Adjust the position as needed
+                scene.add(labelMesh);
+            });
         }
 
-        function createRoads() {
-            const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
-            const sidewalkMaterial = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
 
-            // Main horizontal road
-            const mainRoadGeometry = new THREE.BoxGeometry(140, 0.5, 8);
-            const mainRoad = new THREE.Mesh(mainRoadGeometry, roadMaterial);
-            mainRoad.position.set(10, -10.25, 0);
-            scene.add(mainRoad);
-
-            // Vertical roads in the city
-            for (let i = -40; i <= -10; i += 15) {
-                const verticalRoadGeometry = new THREE.BoxGeometry(8, 0.5, 30);
-                const verticalRoad = new THREE.Mesh(verticalRoadGeometry, roadMaterial);
-                verticalRoad.position.set(i, -10.25, -10);
-                scene.add(verticalRoad);
-            }
-
-            // Sidewalks beside main road
-            const sidewalkGeometry = new THREE.BoxGeometry(140, 0.4, 4);
-            const leftSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
-            leftSidewalk.position.set(10, -10.3, -6);
-            scene.add(leftSidewalk);
-
-            const rightSidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
-            rightSidewalk.position.set(10, -10.3, 6);
-            scene.add(rightSidewalk);
-        }
 
         function createPark() {
             const treeColors = [0x228B22, 0x32CD32, 0x008000];
@@ -171,97 +184,100 @@
 
             for (let i = -35; i <= 60; i += Math.random() * 5 + 5) {
                 for (let j = 15 + Math.random() * 5; j <= 35; j += Math.random() * 5 + 5) {
-                    // Trunk
-                    const trunkGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5);
-                    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-                    trunk.position.set(i + (Math.random() * 10 - 5), -5, j + (Math.random() * 10 - 5));
+                    const trunkPos = new THREE.Vector3(i + (Math.random() * 10 - 5), -8, j + (Math.random() * 10 - 5));
+
+                    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 5), trunkMaterial);
+                    trunk.position.copy(trunkPos);
                     scene.add(trunk);
 
-                    // Leaves
-                    const leavesGeometry = new THREE.SphereGeometry(4);
-                    const leavesMaterial = new THREE.MeshLambertMaterial({ color: treeColors[Math.floor(Math.random() * treeColors.length)] });
-                    const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-                    leaves.position.set(trunk.position.x, trunk.position.y + 6, trunk.position.z);
+                    const leaves = new THREE.Mesh(new THREE.SphereGeometry(4), new THREE.MeshLambertMaterial({ color: treeColors[Math.floor(Math.random() * treeColors.length)] }));
+                    leaves.position.set(trunkPos.x, trunkPos.y + 6, trunkPos.z);
                     scene.add(leaves);
                 }
             }
 
-            // Benches in the park
             for (let i = -20; i <= 50; i += 35) {
                 for (let j = 20; j <= 30; j += 10) {
-                    const benchBaseGeometry = new THREE.BoxGeometry(10, 0.5, 2);
-                    const benchBase = new THREE.Mesh(benchBaseGeometry, benchMaterial);
-                    benchBase.position.set(i, -9.75, j);
+                    const benchBase = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 2), benchMaterial);
+                    benchBase.position.set(i, -10.25, j);
+                    benchBase.rotation.y = Math.PI; // Rotate to face the camera
                     scene.add(benchBase);
 
-                    const benchBackGeometry = new THREE.BoxGeometry(10, 2, 0.5);
-                    const benchBack = new THREE.Mesh(benchBackGeometry, benchMaterial);
-                    benchBack.position.set(i, -8.75, j + 1);
+                    const benchBack = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 0.5), benchMaterial);
+                    benchBack.position.set(i, -9.25, j - 1);
+                    benchBack.rotation.y = Math.PI; // Rotate to face the camera
                     scene.add(benchBack);
                 }
             }
+
         }
+
 
         function createMansions() {
-            const mansionColors = [0xffcccc, 0xccffcc, 0xccccff, 0xffffcc];
-            const mansionMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
-            const windowMaterial = new THREE.MeshLambertMaterial({ color: 0xddddff });
+            const mansionMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const windowMaterial = new THREE.MeshLambertMaterial({ color: 0xccddff });
+            const roofMaterial = new THREE.MeshLambertMaterial({ color: 0x8B0000 });
+            const doorMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
 
-            for (let i = 80; i <= 200; i += 60) {  // Significantly spread out
-                for (let j = -40; j <= 40; j += 40) {
-                    const depth = Math.random() * 20 + 20;
-                    const width = Math.random() * 20 + 20;
-                    const height = Math.random() * 15 + 15;
-                    const geometry = new THREE.BoxGeometry(width, height, depth);
-                    const mansion = new THREE.Mesh(geometry, mansionMaterial);
-                    mansion.position.set(i, height / 2 - 10, j);
-                    scene.add(mansion);
+            const mansionPosition = { x: 50, y: 0, z: -20 };
 
-                    // Add windows to mansions for detail
-                    const windowGeometry = new THREE.BoxGeometry(3, 3, 0.1);
-                    for (let w = -width / 2 + 4; w <= width / 2 - 4; w += 8) {
-                        for (let h = 5; h < height; h += 6) {
-                            const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-                            windowMesh.position.set(i + w, h - 10, j + depth / 2 - 0.5);
-                            scene.add(windowMesh);
+            // Main Body of Mansion (Brown Box)
+            const mansion = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 20), mansionMaterial);
+            mansion.position.set(mansionPosition.x, mansionPosition.y, mansionPosition.z);
+            scene.add(mansion);
 
-                            const windowMeshOpposite = new THREE.Mesh(windowGeometry, windowMaterial);
-                            windowMeshOpposite.position.set(i + w, h - 10, j - depth / 2 + 0.5);
-                            scene.add(windowMeshOpposite);
-                        }
-                    }
-                }
-            }
+            // Windows
+            const windowGeom = new THREE.BoxGeometry(5, 5, 1);  // Window dimensions
+
+            const leftWindow = new THREE.Mesh(windowGeom, windowMaterial);
+            leftWindow.position.set(mansionPosition.x - 5, mansionPosition.y + 5, mansionPosition.z + 10);
+            scene.add(leftWindow);
+
+            const rightWindow = new THREE.Mesh(windowGeom, windowMaterial);
+            rightWindow.position.set(mansionPosition.x + 5, mansionPosition.y + 5, mansionPosition.z + 10);
+            scene.add(rightWindow);
+
+
+            // Door
+            const doorGeom = new THREE.BoxGeometry(6, 10, 1);
+            const doorMesh = new THREE.Mesh(doorGeom, doorMaterial);
+            doorMesh.position.set(mansionPosition.x, mansionPosition.y - 5, mansionPosition.z + 10); // Positioned at the front of the mansion and slightly below center
+            scene.add(doorMesh);
+
+            // Mansion Roof (Pyramid)
+            const mansionRoofGeom = new THREE.ConeGeometry(20, 10, 4, 1, false);
+            const mansionRoof = new THREE.Mesh(mansionRoofGeom, roofMaterial);
+            mansionRoof.rotation.y = Math.PI / 4;  // Rotate the pyramid by 45 degrees around the Y-axis
+            mansionRoof.position.set(mansionPosition.x, mansionPosition.y + 15, mansionPosition.z); 
+            scene.add(mansionRoof);
         }
 
+
+
+
+
+
+
+
         function addQuestionMarks() {
-            const loader = new THREE.FontLoader();
-            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
-                const textGeometry = new THREE.TextGeometry('?', {
-                    font: font,
-                    size: 10,
-                    height: 2,
-                    curveSegments: 12,
-                    bevelEnabled: true,
-                    bevelThickness: 0.5,
-                    bevelSize: 0.25,
-                    bevelOffset: 0,
-                    bevelSegments: 5
-                });
+            const questionMarkPositions = [
+                { x: -43, y: 5, z: -20 },
+                { x: -25, y: 5, z: 25 },
+                { x: 3, y: 30, z: -15 },
+                { x: 47, y: 60, z: -50 },
+                { x: 47, y: 24, z: -20 }
+            ];
+            new THREE.FontLoader().load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                const textGeometry = new THREE.TextGeometry('?', { font: font, size: 10, height: 2, curveSegments: 12, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.25, bevelSegments: 5 });
+                const materials = [new THREE.MeshPhongMaterial({ color: 0xff0000 }), new THREE.MeshPhongMaterial({ color: 0x00ff00 }), new THREE.MeshPhongMaterial({ color: 0x0000ff }), new THREE.MeshPhongMaterial({ color: 0xffff00 }), new THREE.MeshPhongMaterial({ color: 0x800080 })]; // Added purple color
 
-                const materials = [
-                    new THREE.MeshPhongMaterial({ color: 0xff0000 }), // Red
-                    new THREE.MeshPhongMaterial({ color: 0x00ff00 }), // Green
-                    new THREE.MeshPhongMaterial({ color: 0x0000ff }), // Blue
-                    new THREE.MeshPhongMaterial({ color: 0xffff00 })  // Yellow
-                ];
-
-                for (let i = 0; i < 4; i++) {
-                    const textMesh = new THREE.Mesh(textGeometry, materials[i]);
-                    textMesh.position.set(-40 + i * 15, 20, 30);  
+                materials.forEach((material, i) => {
+                    const textMesh = new THREE.Mesh(textGeometry, material);
+                    textMesh.position.set(questionMarkPositions[i].x, questionMarkPositions[i].y, questionMarkPositions[i].z);
                     scene.add(textMesh);
                     clickableObjects.push(textMesh);
-                }
+                });
+
             });
         }
 
@@ -278,62 +294,31 @@
 
         function onClick(event) {
             event.preventDefault();
-
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(clickableObjects);
 
-            if (intersects.length > 0) {
-                const clickedObject = intersects[0].object;
-                const index = clickableObjects.indexOf(clickedObject);
-
-                // Open the corresponding modal
-                openModal(`modal${index + 1}`);
-            }
+            if (intersects.length > 0) openModal(`modal${clickableObjects.indexOf(intersects[0].object) + 1}`);
         }
 
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = "block";
             modal.addEventListener('click', (event) => {
-                if (event.target.className === "close" || event.target === modal) {
-                    modal.style.display = "none";
-                }
+                if (event.target.className === "close" || event.target === modal) modal.style.display = "none";
             });
         }
     </script>
 
-    <!-- Modals -->
-    <div id="modal1" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="modal1">&times;</span>
-            <h2>Title 1</h2>
-            <p>Description for question mark 1</p>
-        </div>
-    </div>
-    <div id="modal2" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="modal2">&times;</span>
-            <h2>Title 2</h2>
-            <p>Description for question mark 2</p>
-        </div>
-    </div>
-    <div id="modal3" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="modal3">&times;</span>
-            <h2>Title 3</h2>
-            <p>Description for question mark 3</p>
-        </div>
-    </div>
-    <div id="modal4" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="modal4">&times;</span>
-            <h2>Title 4</h2>
-            <p>Description for question mark 4</p>
-        </div>
-    </div>
+    <div id="modal1" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Title 1</h2><p>Description for question mark 1</p></div></div>
+    <div id="modal2" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Phytoplankton: The Ocean's Oxygen-Producing Trees</h2><p>The marine food web is built on these tiny phytoplankton, which also support a variety of marine species, operate as critical carbon dioxide absorbers, and fill the ocean with oxygen that sustains life. They are like the green canopy of a metropolis. Phytoplankton are crucial for the health of the oceans on our planet, just as trees are for the ecosystem of a city which provide organisms in the city with clean air by sequestering the carbon dioxide emissions.</p></div></div>
+    <div id="modal3" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Prochlorococcus: The Abundant Species</h2><p>As a highly abundant phytoplankton species, Prochlorococcus is likened to the innumerable apartment buildings that densely populate the bustling city of the ocean, signifying its extensive presence and crucial function in the marine ecosystem.</p></div></div>
+    <div id="modal4" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Title 4</h2><p>Description for question mark 4</p></div></div>
+    <div id="modal5" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Title 5</h2><p>Description for question mark 5</p></div></div>
+    <div id="modal6" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Large Diatoms: The Microscopic Mansions</h2><p>Among the bustling cityscape of microscopic life in the marine environment, large diatoms stand out like grand mansions.  Even though they are noticeably larger than many of their minuscule counterparts, their relative less abundant emphasizes their imposing presence, similar to the way upscale houses stand out in a city's surroundings.</p></div></div>
+    
 
 </body>
 </html>
